@@ -4,7 +4,7 @@ require 'count_estimate/active_record/relation'
 require 'pry'
 
 module QuickCount
-  class Railtie < Rails::Railtie
+  class Railtie < ::Rails::Railtie
 
     # rake_tasks do
     #   load "../tasks/quick_count_tasks.rake"
