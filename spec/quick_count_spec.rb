@@ -1,5 +1,4 @@
 require "spec_helper"
-require 'pry'
 
 describe QuickCount do
   it "is present in models" do
