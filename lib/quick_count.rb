@@ -10,6 +10,7 @@ module QuickCount
 
   def self.load
     ::ActiveRecord::Base.send :include, QuickCount::ActiveRecord::Base
+    ::ActiveRecord::Relation.send :include, CountEstimate::ActiveRecord::Relation
   end
 
   def self.install
@@ -35,10 +36,28 @@ module QuickCount
       $func$ LANGUAGE plpgsql;
     eos
     )
+    ::ActiveRecord::Base.connection.execute(<<-eos
+        CREATE OR REPLACE FUNCTION count_estimate(query text) RETURNS integer AS
+        $func$
+        DECLARE
+            rec   record;
+            rows  integer;
+        BEGIN
+            FOR rec IN EXECUTE 'EXPLAIN ' || query LOOP
+                rows := substring(rec."QUERY PLAN" FROM ' rows=([[:digit:]]+)');
+                EXIT WHEN rows IS NOT NULL;
+            END LOOP;
+
+            RETURN rows;
+        END
+        $func$ LANGUAGE plpgsql;
+    eos
+    )
   end
 
   def self.uninstall
     ::ActiveRecord::Base.connection.execute("DROP FUNCTION quick_count(text);")
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION count_estimate(text);")
   end
 
 end

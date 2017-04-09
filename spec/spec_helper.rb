@@ -1,5 +1,4 @@
 ENV["RAILS_ENV"] = "test"
-require "database_cleaner"
 
 require 'quick_count'
 
@@ -23,13 +22,5 @@ QuickCount.install
 
 RSpec.configure do |config|
   config.order = "random"
-
-  DatabaseCleaner.strategy = :transaction
-
-  config.around(:each, db: true) do |example|
-    DatabaseCleaner.start
-    example.run
-    DatabaseCleaner.clean
-  end
 
 end

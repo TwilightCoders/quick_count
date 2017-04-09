@@ -2,15 +2,14 @@ require "spec_helper"
 require 'pry'
 
 describe QuickCount do
-  describe "all models" do
-    it "respond to :quick_count" do
-      expect(Post).to respond_to(:quick_count)
-    end
+  it "is present in models" do
+    expect(Post).to respond_to(:quick_count)
+    expect(Post.all).to respond_to(:count_estimate)
+  end
 
-    it "respond to :quick_count" do
-      expect(Post.quick_count).to be(0)
-    end
-
+  it "returns the correct count" do
+    expect(Post.quick_count).to be(0)
+    expect(Post.all.count_estimate).to be > 0
   end
 
 end
