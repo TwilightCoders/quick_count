@@ -12,12 +12,6 @@ module QuickCount
           result[0]["quick_count"].to_i
         end
 
-        def count_estimate
-          my_statement = ::ActiveRecord::Base.connection.quote(to_sql)
-          result = ::ActiveRecord::Base.connection.execute("SELECT count_estimate(#{my_statement})")
-          result[0]["count_estimate"]
-        end
-
       end
 
     end
