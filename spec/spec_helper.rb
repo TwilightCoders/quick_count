@@ -1,5 +1,13 @@
 ENV["RAILS_ENV"] = "test"
 
+require 'database_cleaner'
+
+require 'simplecov'
+SimpleCov.start do
+  # add_group 'Lib', 'lib'
+  add_filter 'spec'
+end
+
 require 'quick_count'
 
 Dir[QuickCount.root.join('spec/support/**/*.rb')].each { |f| require f }
