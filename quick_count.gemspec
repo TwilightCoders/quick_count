@@ -31,12 +31,12 @@ Gem::Specification.new do |spec|
 
   rails_versions = ['>= 4.1', '< 6']
 
-  spec.add_runtime_dependency 'pg', ['>= 0.12.0', '< 0.30.0']
+  spec.add_runtime_dependency 'pg', '~> 0'
   spec.add_runtime_dependency 'activerecord', rails_versions
   spec.add_runtime_dependency 'activesupport', rails_versions
   spec.add_runtime_dependency 'activemodel', rails_versions
   spec.add_runtime_dependency 'railties', rails_versions
 
-  spec.add_development_dependency 'bundler', '~> 1.5'
+  spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'pry', '~> 0'
 end
