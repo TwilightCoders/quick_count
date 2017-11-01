@@ -17,4 +17,4 @@ addons:
 
 env:
   - RSPEC_VERSION="<2.99"
-  - RSPEC_VERSION="~>3.0
+  - RSPEC_VERSION="~>3.0"
