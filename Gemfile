@@ -10,7 +10,17 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 group :development, :test do
-  gem 'pg', platform: :mri
-  gem 'activerecord-jdbcpostgresql-adapter', platform: :jruby
+  # Generates coverage stats of specs
+  gem 'simplecov'
+
+  # Publishes coverage to codeclimate
+  gem 'codeclimate-test-reporter'
+
+  # Gives CircleCI more perspective on our tests
+  gem 'rspec_junit_formatter'
+
+  gem 'rspec'
+
+  gem 'database_cleaner'
 end
 

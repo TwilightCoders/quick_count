@@ -21,11 +21,11 @@ Gem::Specification.new do |spec|
     raise 'RubyGems 2.0 or newer is required to protect against public gem pushes.'
   end
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.bindir        = 'exe'
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^spec/})
-  spec.require_paths = ['lib']
+  spec.files         = `git ls-files -z`.split("\x0")
+  spec.bindir        = 'bin'
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ['lib', 'spec']
 
   spec.required_ruby_version = '~> 2.1'
 
@@ -38,6 +38,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'railties', rails_versions
 
   spec.add_development_dependency 'bundler', '~> 1.5'
-  spec.add_development_dependency 'rspec', '~> 3.3'
   spec.add_development_dependency 'pry', '~> 0'
 end
