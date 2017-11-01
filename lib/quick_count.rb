@@ -1,6 +1,6 @@
+require 'quick_count/version'
 require 'quick_count/railtie'
 require 'active_record'
-require 'rake'
 
 module QuickCount
 
