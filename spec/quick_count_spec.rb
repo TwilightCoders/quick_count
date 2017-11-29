@@ -11,4 +11,8 @@ describe QuickCount do
     expect(Post.all.count_estimate).to be > 0
   end
 
+  it "root has the right value" do
+    expect(QuickCount.root).not_to be_nil
+  end
+
 end

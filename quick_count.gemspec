@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['dale@twilightcoders.net']
 
   spec.summary       = 'Quickly get an accurate count estimation for large tables.'
+  spec.description   = 'Installs two database functions, `quick_count` and `count_estimate` for getting count estimations on large tables'
   spec.homepage      = "https://github.com/TwilightCoders/quick_count"
   spec.license       = 'MIT'
 
@@ -27,16 +28,16 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib', 'spec']
 
-  spec.required_ruby_version = '~> 2.1'
-
-  rails_versions = ['>= 4.1', '< 6']
+  rails_versions = ['>= 4', '< 6']
+  spec.required_ruby_version = '>= 2.1'
 
   spec.add_runtime_dependency 'pg', '~> 0'
   spec.add_runtime_dependency 'activerecord', rails_versions
-  spec.add_runtime_dependency 'activesupport', rails_versions
-  spec.add_runtime_dependency 'activemodel', rails_versions
   spec.add_runtime_dependency 'railties', rails_versions
 
+  spec.add_development_dependency 'pry-byebug', '~> 3'
   spec.add_development_dependency 'bundler', '~> 1.3'
-  spec.add_development_dependency 'pry', '~> 0'
+  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'combustion', '~> 0.7'
+
 end
