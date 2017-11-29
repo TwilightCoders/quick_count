@@ -4,8 +4,6 @@ require 'active_record'
 
 module QuickCount
 
-  public
-
   def self.root
     @root ||= Pathname.new(File.dirname(File.expand_path(File.dirname(__FILE__), '/../')))
   end
