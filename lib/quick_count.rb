@@ -14,7 +14,19 @@ module QuickCount
   end
 
   def self.install
-    ::ActiveRecord::Base.connection.execute(<<-eos
+    ::ActiveRecord::Base.connection.execute(quick_count_sql)
+    ::ActiveRecord::Base.connection.execute(count_estimate_sql)
+  end
+
+  def self.uninstall
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION quick_count(text);")
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION count_estimate(text);")
+  end
+
+private
+
+  def self.quick_count_sql
+    <<-eos
       CREATE OR REPLACE FUNCTION quick_count(table_name text) RETURNS bigint AS
       $func$
       DECLARE
@@ -35,8 +47,10 @@ module QuickCount
       END
       $func$ LANGUAGE plpgsql;
     eos
-    )
-    ::ActiveRecord::Base.connection.execute(<<-eos
+  end
+
+  def self.count_estimate_sql
+    <<-eos
         CREATE OR REPLACE FUNCTION count_estimate(query text) RETURNS integer AS
         $func$
         DECLARE
@@ -52,12 +66,6 @@ module QuickCount
         END
         $func$ LANGUAGE plpgsql;
     eos
-    )
-  end
-
-  def self.uninstall
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION quick_count(text);")
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION count_estimate(text);")
   end
 
 end
