@@ -33,6 +33,7 @@
 
 # Compiled source #
 ###################
+/pkg
 *.com
 *.class
 *.dll
