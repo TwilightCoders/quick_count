@@ -1,7 +1,8 @@
 [![Version      ](https://img.shields.io/gem/v/quick_count.svg?maxAge=2592000)](https://rubygems.org/gems/quick_count)
 [![Build Status ](https://travis-ci.org/TwilightCoders/quick_count.svg)](https://travis-ci.org/TwilightCoders/quick_count)
-[![Code Climate ](https://codeclimate.com/github/TwilightCoders/quick_count/badges/gpa.svg)](https://codeclimate.com/github/TwilightCoders/quick_count)
+[![Code Climate ](https://api.codeclimate.com/v1/badges/43ba3e038a91b44fba2c/maintainability)](https://codeclimate.com/github/TwilightCoders/quick_count/maintainability)
 [![Test Coverage](https://codeclimate.com/github/TwilightCoders/quick_count/badges/coverage.svg)](https://codeclimate.com/github/TwilightCoders/quick_count/coverage)
+[![Dependency Status](https://gemnasium.com/badges/github.com/TwilightCoders/quick_count.svg)](https://gemnasium.com/github.com/TwilightCoders/quick_count)
 
 # QuickCount
 
