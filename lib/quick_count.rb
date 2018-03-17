@@ -13,22 +13,22 @@ module QuickCount
     ::ActiveRecord::Relation.send :include, CountEstimate::ActiveRecord::Relation
   end
 
-  def self.install(threshold: 500000)
-    ::ActiveRecord::Base.connection.execute(quick_count_sql(threshold: threshold))
-    ::ActiveRecord::Base.connection.execute(count_estimate_sql())
+  def self.install(threshold: 500000, schema: 'public')
+    ::ActiveRecord::Base.connection.execute(quick_count_sql(schema: schema, threshold: threshold))
+    ::ActiveRecord::Base.connection.execute(count_estimate_sql(schema: schema))
   end
 
-  def self.uninstall
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS quick_count(text, bigint);")
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS quick_count(text);")
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS count_estimate(text);")
+  def self.uninstall(schema: 'public')
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text, bigint);")
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text);")
+    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.count_estimate(text);")
   end
 
 private
 
-  def self.quick_count_sql(threshold: 500000)
+  def self.quick_count_sql(threshold: 500000, schema: 'public')
     <<-SQL
-      CREATE OR REPLACE FUNCTION quick_count(table_name text, threshold bigint default #{threshold}) RETURNS bigint AS
+      CREATE OR REPLACE FUNCTION #{schema}.quick_count(table_name text, threshold bigint default #{threshold}) RETURNS bigint AS
       $func$
       DECLARE count bigint;
       BEGIN
@@ -54,9 +54,9 @@ private
     SQL
   end
 
-  def self.count_estimate_sql
+  def self.count_estimate_sql(schema: 'public')
     <<-SQL
-        CREATE OR REPLACE FUNCTION count_estimate(query text) RETURNS integer AS
+        CREATE OR REPLACE FUNCTION #{schema}.count_estimate(query text) RETURNS integer AS
         $func$
         DECLARE
             rec   record;

@@ -1,4 +1,5 @@
 test:
   adapter: postgresql
   encoding: unicode
-  database: active_record-mti-test
+  database: quick_count-test
+  schema_search_path: "quick_count,public"
