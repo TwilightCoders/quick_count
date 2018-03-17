@@ -1,8 +1,9 @@
 # QuickCount
 
-## 0.1.0 _(Unreleased)_
-- More tests
-- Code cleanup (maintainability)
+## 0.0.6 _(March 17th 2018)_
+- Improved accuracy of `quick_count` by an average of 2.16%
+- Configurable threshold
+- Configurable schema
 
 ## 0.0.5 _(November 29th 2017)_
 - Tests (no signficant changes)
