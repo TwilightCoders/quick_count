@@ -1,6 +1,6 @@
 require 'rails/railtie'
-require 'quick_count/active_record/base'
-require 'count_estimate/active_record/relation'
+require 'quick_count/active_record'
+require 'count_estimate/active_record'
 
 module QuickCount
   class Railtie < Rails::Railtie

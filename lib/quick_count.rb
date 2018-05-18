@@ -9,8 +9,8 @@ module QuickCount
   end
 
   def self.load
-    ::ActiveRecord::Base.send :include, QuickCount::ActiveRecord::Base
-    ::ActiveRecord::Relation.send :include, CountEstimate::ActiveRecord::Relation
+    ::ActiveRecord::Base.send :include, QuickCount::ActiveRecord
+    ::ActiveRecord::Relation.send :include, CountEstimate::ActiveRecord
   end
 
   def self.install(threshold: 500000, schema: 'public')
