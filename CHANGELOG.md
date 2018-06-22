@@ -1,5 +1,10 @@
 # QuickCount
 
+## 0.1.0 _(June 22nd 2018)_
+- Unlock `pg` gem (allow for > 0.2.x)
+- Cleaned up gemspec and what it bundles in the gem
+- Cleaned up some files/module names
+
 ## 0.0.6 _(March 17th 2018)_
 - Improved accuracy of `quick_count` by an average of 2.16%
 - Configurable threshold
