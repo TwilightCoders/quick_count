@@ -44,6 +44,10 @@ Or install it yourself as:
 
     $ gem install quick_count
 
+To finish the install, in rails console:
+
+    $ QuickCount.install # Install with default (500000) threshold
+
 ## Usage
 
 ```ruby
