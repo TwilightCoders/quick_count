@@ -35,7 +35,7 @@ private
           EXECUTE 'SELECT
             CASE
             WHEN SUM(estimate)::integer < '|| threshold ||' THEN
-              (SELECT COUNT(*) FROM '|| table_name ||')
+              (SELECT COUNT(*) FROM "'|| table_name ||'")
             ELSE
               SUM(estimate)::integer
             END AS count
