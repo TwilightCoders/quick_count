@@ -1,5 +1,8 @@
 # QuickCount
 
+## 0.1.1 _(November 27th 2018)_
+- Fix for table names with special characters
+
 ## 0.1.0 _(June 22nd 2018)_
 - Unlock `pg` gem (allow for > 0.2.x)
 - Cleaned up gemspec and what it bundles in the gem
