@@ -2,8 +2,8 @@ ENV['RAILS_ENV'] = 'test'
 
 require 'database_cleaner'
 require 'combustion'
-
 require 'simplecov'
+
 SimpleCov.start do
   add_filter 'spec'
 end
