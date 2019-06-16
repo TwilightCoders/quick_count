@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   rails_versions = ['>= 4', '< 6']
   spec.required_ruby_version = '>= 2.0'
 
-  spec.add_runtime_dependency 'pg', '>= 0.20'
+  spec.add_runtime_dependency 'pg'
   spec.add_runtime_dependency 'activerecord', rails_versions
   spec.add_runtime_dependency 'railties', rails_versions
 
