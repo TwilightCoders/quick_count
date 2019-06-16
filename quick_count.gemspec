@@ -26,9 +26,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'activerecord', rails_versions
   spec.add_runtime_dependency 'railties', rails_versions
 
-  spec.add_development_dependency 'pry-byebug', '~> 3'
-  spec.add_development_dependency 'bundler', '~> 1.3'
-  spec.add_development_dependency 'rake', '~> 12.0'
-  spec.add_development_dependency 'combustion', '~> 0.7'
+  spec.add_development_dependency 'pry-byebug'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'combustion'
 
 end
