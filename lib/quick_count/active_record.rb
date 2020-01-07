@@ -8,7 +8,7 @@ module QuickCount
 
       def quick_count(threshold: nil)
         threshold = threshold ? ", #{threshold}" : nil
-        result = ::ActiveRecord::Base.connection.execute("SELECT quick_count('#{table_name}'#{threshold})")
+        result = connection.execute("SELECT quick_count('#{table_name}'#{threshold})")
         result[0]["quick_count"].to_i
       end
 
