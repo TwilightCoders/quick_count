@@ -1,5 +1,8 @@
 # QuickCount
 
+## 0.1.2 _(January 7th 2020)_
+- Allows for multiple database support
+
 ## 0.1.1 _(November 27th 2018)_
 - Fix for table names with special characters
 
