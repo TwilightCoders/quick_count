@@ -5,8 +5,8 @@ sudo: false
 cache: bundler
 
 before_install:
-  - gem update --system
-  - gem install bundler
+  - gem install "rubygems-update:<3.0" --no-document
+  - update_rubygems
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
