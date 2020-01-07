@@ -13,15 +13,15 @@ module QuickCount
     ::ActiveRecord::Relation.send :include, CountEstimate::ActiveRecord
   end
 
-  def self.install(threshold: 500000, schema: 'public')
-    ::ActiveRecord::Base.connection.execute(quick_count_sql(schema: schema, threshold: threshold))
-    ::ActiveRecord::Base.connection.execute(count_estimate_sql(schema: schema))
+  def self.install(threshold: 500000, schema: 'public', connection: ::ActiveRecord::Base.connection)
+    connection.execute(quick_count_sql(schema: schema, threshold: threshold))
+    connection.execute(count_estimate_sql(schema: schema))
   end
 
-  def self.uninstall(schema: 'public')
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text, bigint);")
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text);")
-    ::ActiveRecord::Base.connection.execute("DROP FUNCTION IF EXISTS #{schema}.count_estimate(text);")
+  def self.uninstall(schema: 'public', connection: ::ActiveRecord::Base.connection)
+    connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text, bigint);")
+    connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text);")
+    connection.execute("DROP FUNCTION IF EXISTS #{schema}.count_estimate(text);")
   end
 
 private
