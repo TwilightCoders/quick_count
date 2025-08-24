@@ -34,10 +34,10 @@ private
       BEGIN
         EXECUTE 'SELECT
           CASE
-          WHEN SUM(estimate)::integer < '|| threshold ||' THEN
+          WHEN SUM(estimate)::bigint < '|| threshold ||' THEN
             (SELECT COUNT(*) FROM "'|| table_name ||'")
           ELSE
-            SUM(estimate)::integer
+            SUM(estimate)::bigint
           END AS count
         FROM (
           SELECT
@@ -56,11 +56,11 @@ private
 
   def self.count_estimate_sql(schema: 'public')
     <<~SQL
-      CREATE OR REPLACE FUNCTION #{schema}.count_estimate(query text) RETURNS integer AS
+      CREATE OR REPLACE FUNCTION #{schema}.count_estimate(query text) RETURNS bigint AS
       $func$
       DECLARE
         rec   record;
-        rows  integer;
+        rows  bigint;
       BEGIN
         FOR rec IN EXECUTE 'EXPLAIN ' || query LOOP
           rows := substring(rec."QUERY PLAN" FROM ' rows=([[:digit:]]+)');

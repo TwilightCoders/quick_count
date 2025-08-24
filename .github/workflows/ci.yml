@@ -1,0 +1,138 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main, develop, release/**]
+  pull_request:
+    branches: [master, main, develop]
+
+permissions:
+  actions: write
+  contents: read
+  id-token: write
+  packages: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ["2.7", "3.0", "3.1", "3.2", "3.3"]
+        gemfile:
+          - gemfiles/activerecord-5.2.Gemfile
+          - gemfiles/activerecord-5.1.Gemfile
+          - gemfiles/activerecord-5.0.Gemfile
+          - gemfiles/activerecord-4.2.Gemfile
+        exclude:
+          # Ruby 2.7+ doesn't work with ActiveRecord 4.2
+          - ruby-version: "2.7"
+            gemfile: gemfiles/activerecord-4.2.Gemfile
+          - ruby-version: "3.0"
+            gemfile: gemfiles/activerecord-4.2.Gemfile
+          - ruby-version: "3.1"
+            gemfile: gemfiles/activerecord-4.2.Gemfile
+          - ruby-version: "3.2"
+            gemfile: gemfiles/activerecord-4.2.Gemfile
+          - ruby-version: "3.3"
+            gemfile: gemfiles/activerecord-4.2.Gemfile
+
+    env:
+      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/quick_count_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby ${{ matrix.ruby-version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client libpq-dev
+
+      - name: Setup database
+        run: |
+          createdb -h localhost -U postgres quick_count_test
+        env:
+          PGPASSWORD: postgres
+
+      - name: Run tests with coverage
+        run: bundle exec rspec
+        env:
+          COVERAGE: true
+
+      - name: Upload coverage artifact (Ruby 3.3, ActiveRecord 5.2 only)
+        if: matrix.ruby-version == '3.3' && matrix.gemfile == 'gemfiles/activerecord-5.2.Gemfile'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 1
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always() # Run even if some test jobs fail
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+        continue-on-error: true # In case no coverage artifact was uploaded
+
+      - name: Upload coverage to Qlty
+        uses: qltysh/qlty-action/coverage@v1
+        continue-on-error: true
+        env:
+          QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+        with:
+          oidc: true
+          files: coverage/coverage.json
+
+      - name: Run Qlty code quality checks
+        run: |
+          curl -sSfL https://qlty.sh | sh
+          echo "$HOME/.qlty/bin" >> $GITHUB_PATH
+          ~/.qlty/bin/qlty check || true
+        continue-on-error: true
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Run bundle audit
+        run: |
+          gem install bundler-audit
+          bundle audit --update || true
+        continue-on-error: true
