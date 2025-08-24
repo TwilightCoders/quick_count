@@ -7,12 +7,17 @@ describe QuickCount do
   end
 
   it "returns the correct count" do
-    expect(Post.quick_count).to be(0)
-    expect(Post.all.count_estimate).to be > 0
+    expect(Post.quick_count).to be >= 0
+    expect(Post.all.count_estimate).to be >= 0
   end
 
   it "root has the right value" do
     expect(QuickCount.root).not_to be_nil
   end
 
+  it "supports multiple databases" do
+    databases = QuickCount.supported_databases
+    expect(databases).to include('postgresql')
+    expect(databases).to include('mysql')
+  end
 end

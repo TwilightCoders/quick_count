@@ -8,12 +8,12 @@ if ENV['COVERAGE']
   require 'simplecov-json'
   SimpleCov.start do
     add_filter 'spec'
-    
+
     # Generate both HTML and JSON for CI
     SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
-      SimpleCov::Formatter::HTMLFormatter,
-      SimpleCov::Formatter::JSONFormatter
-    ])
+                                                                      SimpleCov::Formatter::HTMLFormatter,
+                                                                      SimpleCov::Formatter::JSONFormatter
+                                                                    ])
   end
 end
 
@@ -34,5 +34,4 @@ RSpec.configure do |config|
     QuickCount.uninstall(schema: schema)
     ActiveRecord::Base.connection.execute("DROP SCHEMA #{schema}")
   end
-
 end
