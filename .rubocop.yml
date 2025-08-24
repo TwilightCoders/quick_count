@@ -1,0 +1,48 @@
+AllCops:
+  TargetRubyVersion: 2.7
+  NewCops: enable
+  Exclude:
+    - 'vendor/**/*'
+    - 'spec/support/**/*'
+    - 'gemfiles/**/*'
+    - 'pkg/**/*'
+    - 'coverage/**/*'
+
+# Gem specific configuration
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+# Allow longer lines for SQL and documentation
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'lib/quick_count.rb' # Contains SQL heredocs
+
+# Allow longer methods for SQL generation
+Metrics/MethodLength:
+  Max: 20
+
+# Allow slightly longer classes for main module
+Metrics/ClassLength:
+  Max: 150
+
+# Allow longer blocks for SQL heredocs
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+# Allow some complexity in SQL generation methods
+Metrics/CyclomaticComplexity:
+  Max: 8
+
+# Disable some style cops that conflict with gem conventions
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# SQL strings are intentionally complex
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+  ConsistentQuotesInMultiline: true
