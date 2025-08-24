@@ -3,7 +3,6 @@ require 'quick_count/railtie'
 require 'active_record'
 
 module QuickCount
-
   def self.root
     @root ||= Pathname.new(File.dirname(File.expand_path(File.dirname(__FILE__), '/../')))
   end
@@ -13,7 +12,7 @@ module QuickCount
     ::ActiveRecord::Relation.include CountEstimate::ActiveRecord
   end
 
-  def self.install(threshold: 500000, schema: 'public', connection: ::ActiveRecord::Base.connection)
+  def self.install(threshold: 500_000, schema: 'public', connection: ::ActiveRecord::Base.connection)
     connection.execute(quick_count_sql(schema: schema, threshold: threshold))
     connection.execute(count_estimate_sql(schema: schema))
   end
@@ -24,9 +23,7 @@ module QuickCount
     connection.execute("DROP FUNCTION IF EXISTS #{schema}.count_estimate(text);")
   end
 
-private
-
-  def self.quick_count_sql(threshold: 500000, schema: 'public')
+  def self.quick_count_sql(threshold: 500_000, schema: 'public')
     <<~SQL
       CREATE OR REPLACE FUNCTION #{schema}.quick_count(table_name text, threshold bigint default #{threshold}) RETURNS bigint AS
       $func$
@@ -71,6 +68,4 @@ private
       $func$ LANGUAGE plpgsql;
     SQL
   end
-
 end
-
