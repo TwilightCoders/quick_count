@@ -1,5 +1,6 @@
 require 'quick_count/version'
 require 'quick_count/railtie'
+require 'quick_count/adapters/factory'
 require 'active_record'
 
 module QuickCount
@@ -9,63 +10,36 @@ module QuickCount
 
   def self.load
     ::ActiveRecord::Base.include QuickCount::ActiveRecord
-    ::ActiveRecord::Relation.include CountEstimate::ActiveRecord
+    ::ActiveRecord::Relation.include QuickCount::ActiveRecord
   end
 
-  def self.install(threshold: 500_000, schema: 'public', connection: ::ActiveRecord::Base.connection)
-    connection.execute(quick_count_sql(schema: schema, threshold: threshold))
-    connection.execute(count_estimate_sql(schema: schema))
+  def self.install(threshold: 500_000, schema: nil, connection: ::ActiveRecord::Base.connection)
+    adapter = create_adapter(connection: connection, schema: schema)
+    adapter.install(threshold: threshold)
   end
 
-  def self.uninstall(schema: 'public', connection: ::ActiveRecord::Base.connection)
-    connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text, bigint);")
-    connection.execute("DROP FUNCTION IF EXISTS #{schema}.quick_count(text);")
-    connection.execute("DROP FUNCTION IF EXISTS #{schema}.count_estimate(text);")
+  def self.uninstall(schema: nil, connection: ::ActiveRecord::Base.connection)
+    adapter = create_adapter(connection: connection, schema: schema)
+    adapter.uninstall
   end
 
-  def self.quick_count_sql(threshold: 500_000, schema: 'public')
-    <<~SQL
-      CREATE OR REPLACE FUNCTION #{schema}.quick_count(table_name text, threshold bigint default #{threshold}) RETURNS bigint AS
-      $func$
-      DECLARE count bigint;
-      BEGIN
-        EXECUTE 'SELECT
-          CASE
-          WHEN SUM(estimate)::bigint < '|| threshold ||' THEN
-            (SELECT COUNT(*) FROM "'|| table_name ||'")
-          ELSE
-            SUM(estimate)::bigint
-          END AS count
-        FROM (
-          SELECT
-              ((SUM(child.reltuples::float)/greatest(SUM(child.relpages::float),1))) * (SUM(pg_relation_size(child.oid))::float / (current_setting(''block_size'')::float)) AS estimate
-          FROM pg_inherits
-              JOIN pg_class parent ON pg_inherits.inhparent = parent.oid
-              JOIN pg_class child  ON pg_inherits.inhrelid  = child.oid
-          WHERE parent.relname = '''|| table_name ||'''
-          UNION SELECT (reltuples::float/greatest(relpages::float, 1)) * (pg_relation_size(pg_class.oid)::float / (current_setting(''block_size'')::float)) AS estimate FROM pg_class where relname='''|| table_name ||'''
-        ) AS tables' INTO count;
-        RETURN count;
-      END
-      $func$ LANGUAGE plpgsql;
-    SQL
+  def self.quick_count(table_name, threshold: nil, connection: ::ActiveRecord::Base.connection)
+    adapter = create_adapter(connection: connection)
+    adapter.quick_count(table_name, threshold: threshold)
   end
 
-  def self.count_estimate_sql(schema: 'public')
-    <<~SQL
-      CREATE OR REPLACE FUNCTION #{schema}.count_estimate(query text) RETURNS bigint AS
-      $func$
-      DECLARE
-        rec   record;
-        rows  bigint;
-      BEGIN
-        FOR rec IN EXECUTE 'EXPLAIN ' || query LOOP
-          rows := substring(rec."QUERY PLAN" FROM ' rows=([[:digit:]]+)');
-          EXIT WHEN rows IS NOT NULL;
-        END LOOP;
-        RETURN rows;
-      END
-      $func$ LANGUAGE plpgsql;
-    SQL
+  def self.count_estimate(query, connection: ::ActiveRecord::Base.connection)
+    adapter = create_adapter(connection: connection)
+    adapter.count_estimate(query)
+  end
+
+  def self.supported_databases
+    Adapters::Factory.supported_databases
+  end
+
+  private
+
+  def self.create_adapter(connection:, schema: nil)
+    Adapters::Factory.create(connection: connection, schema: schema)
   end
 end
