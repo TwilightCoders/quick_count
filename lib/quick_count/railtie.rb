@@ -11,6 +11,7 @@ module QuickCount
 
     initializer 'quick_count.load' do |app|
       ActiveSupport.on_load(:active_record) do
+        puts "Hello from QC"
         QuickCount.load
       end
     end
