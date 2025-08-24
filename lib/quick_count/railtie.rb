@@ -1,10 +1,8 @@
 require 'rails/railtie'
 require 'quick_count/active_record'
-require 'count_estimate/active_record'
 
 module QuickCount
   class Railtie < Rails::Railtie
-
     # rake_tasks do
     #   load "../tasks/quick_count_tasks.rake"
     # end
@@ -15,6 +13,5 @@ module QuickCount
         QuickCount.load
       end
     end
-
   end
 end

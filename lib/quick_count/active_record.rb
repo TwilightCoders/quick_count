@@ -5,14 +5,14 @@ module QuickCount
     extend ActiveSupport::Concern
 
     module ClassMethods
-
       def quick_count(threshold: nil)
-        threshold = threshold ? ", #{threshold}" : nil
-        result = connection.execute("SELECT quick_count('#{table_name}'#{threshold})")
-        result[0]["quick_count"].to_i
+        QuickCount.quick_count(table_name, threshold: threshold, connection: connection)
       end
-
     end
 
+    # Instance method for ActiveRecord::Relation
+    def count_estimate
+      QuickCount.count_estimate(to_sql, connection: connection)
+    end
   end
 end
