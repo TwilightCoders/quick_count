@@ -4,8 +4,17 @@ require 'database_cleaner'
 require 'combustion'
 require 'simplecov'
 
-SimpleCov.start do
-  add_filter 'spec'
+if ENV['COVERAGE']
+  require 'simplecov-json'
+  SimpleCov.start do
+    add_filter 'spec'
+    
+    # Generate both HTML and JSON for CI
+    SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new([
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::JSONFormatter
+    ])
+  end
 end
 
 Combustion.path = 'spec/support/rails'
