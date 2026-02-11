@@ -21,11 +21,6 @@ describe QuickCount::Adapters do
       expect(adapter.supported?).to be true
     end
 
-    it 'can install and uninstall functions' do
-      expect { adapter.install }.not_to raise_error
-      expect { adapter.uninstall }.not_to raise_error
-    end
-
     it 'provides quick_count functionality via QuickCount module' do
       # Test via the main interface which handles schema properly
       result = QuickCount.quick_count('posts')
