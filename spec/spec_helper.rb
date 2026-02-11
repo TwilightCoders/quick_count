@@ -1,6 +1,6 @@
 ENV['RAILS_ENV'] = 'test'
 
-require 'database_cleaner'
+require 'logger'
 require 'combustion'
 require 'simplecov'
 
