@@ -13,16 +13,6 @@ module QuickCount
     ::ActiveRecord::Relation.include QuickCount::ActiveRecord
   end
 
-  def self.install(threshold: 500_000, schema: nil, connection: ::ActiveRecord::Base.connection)
-    adapter = create_adapter(connection: connection, schema: schema)
-    adapter.install(threshold: threshold)
-  end
-
-  def self.uninstall(schema: nil, connection: ::ActiveRecord::Base.connection)
-    adapter = create_adapter(connection: connection, schema: schema)
-    adapter.uninstall
-  end
-
   def self.quick_count(table_name, threshold: nil, connection: ::ActiveRecord::Base.connection)
     adapter = create_adapter(connection: connection)
     adapter.quick_count(table_name, threshold: threshold)
@@ -39,7 +29,7 @@ module QuickCount
 
   private
 
-  def self.create_adapter(connection:, schema: nil)
-    Adapters::Factory.create(connection: connection, schema: schema)
+  def self.create_adapter(connection:)
+    Adapters::Factory.create(connection: connection)
   end
 end

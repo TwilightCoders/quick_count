@@ -6,14 +6,14 @@ module QuickCount
     class Factory
       ADAPTERS = [Postgresql, Mysql].freeze
 
-      def self.create(connection:, schema: nil)
+      def self.create(connection:)
         adapter_class = detect_adapter(connection)
-        
+
         unless adapter_class
           raise UnsupportedDatabaseError, "Unsupported database: #{connection.adapter_name}"
         end
-        
-        adapter_class.new(connection: connection, schema: schema)
+
+        adapter_class.new(connection: connection)
       end
 
       def self.detect_adapter(connection)

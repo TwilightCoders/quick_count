@@ -1,22 +1,13 @@
 module QuickCount
   module Adapters
     class Base
-      attr_reader :connection, :schema
+      attr_reader :connection
 
-      def initialize(connection:, schema: default_schema)
+      def initialize(connection:)
         @connection = connection
-        @schema = schema
       end
 
       # Abstract methods that must be implemented by adapters
-      def install(threshold: 500_000)
-        raise NotImplementedError, "#{self.class} must implement #install"
-      end
-
-      def uninstall
-        raise NotImplementedError, "#{self.class} must implement #uninstall"
-      end
-
       def quick_count(table_name, threshold: nil)
         raise NotImplementedError, "#{self.class} must implement #quick_count"
       end
@@ -30,10 +21,6 @@ module QuickCount
       end
 
       private
-
-      def default_schema
-        'public'
-      end
 
       def execute_sql(sql)
         connection.execute(sql)
