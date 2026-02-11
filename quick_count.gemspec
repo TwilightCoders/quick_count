@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['dale@twilightcoders.net']
 
   spec.summary       = 'Quickly get an accurate count estimation for large tables.'
-  spec.description   = 'Installs two database functions, `quick_count` and `count_estimate` for getting count estimations on large tables'
+  spec.description   = 'Fast approximate row counts for large PostgreSQL tables using database statistics instead of COUNT(*)'
   spec.homepage      = "https://github.com/TwilightCoders/quick_count"
   spec.license       = 'MIT'
 
@@ -15,12 +15,10 @@ Gem::Specification.new do |spec|
 
   spec.files         = Dir['CHANGELOG.md', 'README.md', 'LICENSE', 'lib/**/*']
   spec.bindir        = 'bin'
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ['lib', 'spec']
+  spec.require_paths = ['lib']
 
   rails_versions = ['>= 4', '< 6']
-  spec.required_ruby_version = '>= 2.0'
+  spec.required_ruby_version = '>= 2.5'
 
   spec.add_runtime_dependency 'pg'
   spec.add_runtime_dependency 'activerecord', rails_versions
@@ -30,5 +28,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'combustion'
-
 end
