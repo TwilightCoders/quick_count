@@ -11,18 +11,16 @@ Luckily, there are [some tricks](https://www.citusdata.com/blog/2016/10/12/count
 **Supports:**
 - PostgreSQL
   - [Multi-table Inheritance](https://github.com/TwilightCoders/active_record-mti)
+- MySQL
 
-| SQL | Version | Result | Accuracy | Time |
-| --- | --- | --- | --- | --- |
-| `SELECT count(*) FROM small_table;` | -- | `2037104` | `100.0000000%` | `4.900s` |
-| `SELECT quick_count('small_table');` | `v0.0.5` | `1988857` | `97.63158877%` | `0.048s` |
-| `SELECT quick_count('small_table');` | `v0.0.6` | `2036407` | `99.96578476%` | `0.050s` |
-| `SELECT count(*) FROM medium_table;` | -- | `81716243` | `100.0000000%` | `257.5s` |
-| `SELECT quick_count('medium_table');` | `v0.0.5` | `79352284` | `97.10711247%` | `0.049s` |
-| `SELECT quick_count('medium_table');` | `v0.0.6` | `81600513` | `99.85837577%` | `0.048s` |
-| `SELECT count(*) FROM large_table;` | -- | `455270802` | `100.0000000%` | `310.6s` |
-| `SELECT quick_count('large_table');` | `v0.0.5` | `448170751` | `98.44047741%` | `0.047s` |
-| `SELECT quick_count('large_table');` | `v0.0.6` | `454448393` | `99.81935828%` | `0.046s` |
+| SQL | Result | Accuracy | Time |
+| --- | --- | --- | --- |
+| `SELECT count(*) FROM small_table;` | `2037104` | `100.0000000%` | `4.900s` |
+| `Post.quick_count` | `2036407` | `99.96578476%` | `0.050s` |
+| `SELECT count(*) FROM medium_table;` | `81716243` | `100.0000000%` | `257.5s` |
+| `Post.quick_count` | `81600513` | `99.85837577%` | `0.048s` |
+| `SELECT count(*) FROM large_table;` | `455270802` | `100.0000000%` | `310.6s` |
+| `Post.quick_count` | `454448393` | `99.81935828%` | `0.046s` |
 
 _These metrics were pulled from real databases being used in a production environment._
 
@@ -38,53 +36,26 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install quick_count
-
-To finish the install, in rails console:
-
-    $ QuickCount.install # Install with default (500000) threshold
+That's it. QuickCount automatically integrates with ActiveRecord via a Railtie — no setup step required.
 
 ## Usage
 
 ```ruby
-# user.rb
-
-QuickCount.install # Install with default (500000) threshold
-
-# Change the threshold for when `quick_count` kicks in...
-QuickCount.install(threshold: 500000)
-
-class User < ActiveRecord::Base
-
-end
-
+# Fast estimated count for large tables
 User.quick_count
 
-# Override the default threshold on a case-by-case basis.
-User.quick_count(threshold: 600000)
+# Override the default threshold (500,000) on a case-by-case basis
+User.quick_count(threshold: 1_000_000)
 
+# Estimate row count for an arbitrary query
+User.where(active: true).count_estimate
 ```
 
-## Uninstallation
-
-Remove this line to your application's Gemfile:
-
-```ruby
-gem 'quick_count'
-```
-
-And then execute:
-
-    $ bundle
-
-And in a rails console:
-
-    $ QuickCount.uninstall
+If the estimated count is below the threshold, `quick_count` falls back to an exact `SELECT COUNT(*)`. For tables above the threshold, it returns the estimate directly.
 
 ## License
-Released under the MIT license - http://opensource.org/licenses/MIT
+
+The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
 ## Development
 
@@ -95,8 +66,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/TwilightCoders/quick_count.
-
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
