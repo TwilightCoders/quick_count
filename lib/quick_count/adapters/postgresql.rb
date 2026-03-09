@@ -42,6 +42,8 @@ module QuickCount
       private
 
       def get_table_estimate(table_name)
+        quoted_table = quote_value(table_name.to_s)
+
         # Enhanced estimation using both reltuples and live stats
         result = execute_sql(<<~SQL)
           SELECT COALESCE(
@@ -57,7 +59,7 @@ module QuickCount
           )::bigint AS estimated_count
           FROM pg_class
           LEFT JOIN pg_stat_user_tables pg_stat ON pg_stat.relid = pg_class.oid
-          WHERE pg_class.oid = '#{table_name}'::regclass
+          WHERE pg_class.oid = #{quoted_table}::regclass
 
           -- Handle partitioned tables
           UNION ALL
@@ -71,7 +73,7 @@ module QuickCount
           FROM pg_inherits
           JOIN pg_class ON pg_inherits.inhrelid = pg_class.oid
           LEFT JOIN pg_stat_user_tables pg_stat ON pg_stat.relid = pg_class.oid
-          WHERE pg_inherits.inhparent = '#{table_name}'::regclass
+          WHERE pg_inherits.inhparent = #{quoted_table}::regclass
         SQL
 
         # Get the maximum estimate (handles both regular and partitioned tables)

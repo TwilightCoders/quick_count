@@ -8,7 +8,6 @@ group :test do
   gem 'simplecov-json'
 
   gem 'rspec'
-  gem 'database_cleaner'
   gem 'combustion'
 end
 

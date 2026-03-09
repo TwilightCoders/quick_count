@@ -17,14 +17,13 @@ Gem::Specification.new do |spec|
   spec.bindir        = 'bin'
   spec.require_paths = ['lib']
 
-  rails_versions = ['>= 4', '< 6']
+  rails_versions = ['>= 5.0', '< 9']
   spec.required_ruby_version = '>= 2.5'
 
   spec.add_runtime_dependency 'pg'
   spec.add_runtime_dependency 'activerecord', rails_versions
   spec.add_runtime_dependency 'railties', rails_versions
 
-  spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'combustion'

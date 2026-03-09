@@ -1,5 +1,14 @@
 # QuickCount
 
+## 0.2.0 _(March 9th 2026)_
+- **Breaking:** Dropped support for Rails 4.x
+- Expanded support for Rails 5.0 through 8.0
+- Zero-config: removed SQL function install/uninstall infrastructure
+- Refactored to adapter pattern architecture
+- Fixed SQL injection vulnerability in table name interpolation
+- Enhanced estimation using `pg_stat_user_tables` with `pg_class` fallback
+- Added support for partitioned tables
+
 ## 0.1.2 _(January 7th 2020)_
 - Allows for multiple database support
 

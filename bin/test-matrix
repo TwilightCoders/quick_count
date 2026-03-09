@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#
+# Run specs across the Ruby × Rails version matrix locally.
+#
+# Usage:
+#   bin/test-matrix                    # all gemfiles, default Ruby versions
+#   bin/test-matrix 2.7.8 3.3.10      # all gemfiles, specific Rubies
+#   GEMFILES="activerecord-7.1" bin/test-matrix  # single gemfile
+#
+# Requires: rbenv, bundler
+#
+set -euo pipefail
+
+# Initialize rbenv/ruby version manager
+CLAUDENV="${CLAUDENV:-$HOME/bin/claudenv}"
+if [[ -f "$CLAUDENV" ]]; then
+  set +u; source "$CLAUDENV"; set -u
+elif command -v rbenv &>/dev/null; then
+  eval "$(rbenv init - bash)"
+fi
+
+# Defaults — override RUBY_VERSIONS via args or GEMFILES via env
+DEFAULT_RUBIES=(2.7.8 3.1.7 3.2.10 3.3.10 3.4.8)
+RUBIES=("${@:-${DEFAULT_RUBIES[@]}}")
+GEMFILE_DIR="gemfiles"
+
+if [[ -n "${GEMFILES:-}" ]]; then
+  IFS=' ' read -ra GEMFILE_NAMES <<< "$GEMFILES"
+else
+  GEMFILE_NAMES=()
+  for f in "$GEMFILE_DIR"/*.Gemfile; do
+    [[ -f "$f" ]] || continue
+    name=$(basename "$f" .Gemfile)
+    GEMFILE_NAMES+=("$name")
+  done
+fi
+
+if [[ ${#GEMFILE_NAMES[@]} -eq 0 ]]; then
+  echo "No gemfiles found in $GEMFILE_DIR/" >&2
+  exit 1
+fi
+
+# Collect results
+declare -a RESULTS=()
+PASS=0
+FAIL=0
+SKIP=0
+
+for ruby in "${RUBIES[@]}"; do
+  if [[ ! -d "$(rbenv root)/versions/$ruby" ]]; then
+    for gemfile in "${GEMFILE_NAMES[@]}"; do
+      RESULTS+=("Ruby $ruby  ×  $gemfile  ⊘  not installed")
+      ((SKIP++))
+    done
+    continue
+  fi
+
+  for gemfile in "${GEMFILE_NAMES[@]}"; do
+    gemfile_path="$GEMFILE_DIR/$gemfile.Gemfile"
+
+    if [[ ! -f "$gemfile_path" ]]; then
+      RESULTS+=("Ruby $ruby  ×  $gemfile  ⊘  gemfile not found")
+      ((SKIP++))
+      continue
+    fi
+
+    printf "%-14s ×  %-24s " "Ruby $ruby" "$gemfile"
+
+    # Bundle install (quiet)
+    if ! RBENV_VERSION="$ruby" BUNDLE_GEMFILE="$gemfile_path" \
+        bundle install --quiet 2>/dev/null; then
+      RESULTS+=("Ruby $ruby  ×  $gemfile  ✗  bundle install failed")
+      echo "✗  bundle install failed"
+      ((FAIL++))
+      continue
+    fi
+
+    # Run specs, capture summary line
+    output=$(RBENV_VERSION="$ruby" BUNDLE_GEMFILE="$gemfile_path" \
+        PGPORT="${PGPORT:-5432}" \
+        bundle exec rspec --format progress 2>&1) || true
+
+    summary=$(echo "$output" | grep -E '[0-9]+ examples' | tail -1)
+
+    if echo "$summary" | grep -q '0 failures'; then
+      RESULTS+=("Ruby $ruby  ×  $gemfile  ✓  $summary")
+      echo "✓  $summary"
+      ((PASS++))
+    else
+      RESULTS+=("Ruby $ruby  ×  $gemfile  ✗  $summary")
+      echo "✗  $summary"
+      ((FAIL++))
+      # Show failures (trimmed)
+      echo "$output" | grep -A 5 'Failure/Error' | head -30
+      echo ""
+    fi
+  done
+done
+
+# Summary
+TOTAL=$((PASS + FAIL + SKIP))
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+for r in "${RESULTS[@]}"; do
+  echo "  $r"
+done
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  $PASS passed, $FAIL failed, $SKIP skipped ($TOTAL total)"
+echo ""
+
+[[ $FAIL -eq 0 ]]
